@@ -10,7 +10,6 @@ import {
 import { Inter } from "next/font/google";
 import { draftMode } from "next/headers";
 import { Suspense } from "react";
-
 import AlertBanner from "./alert-banner";
 import PortableText from "./portable-text";
 
@@ -19,6 +18,8 @@ import * as demo from "@/sanity/lib/demo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { settingsQuery } from "@/sanity/lib/queries";
 import { resolveOpenGraphImage } from "@/sanity/lib/utils";
+import { precomputeFlags, showAd } from "@/flags";
+import BannerAd from "./banner-ad";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await sanityFetch<SettingsQueryResult>({
@@ -97,16 +98,20 @@ async function Footer() {
   );
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+  console.log('showAd:', await showAd())
+
   return (
     <html lang="en" className={`${inter.variable} bg-white text-black`}>
       <body>
         <section className="min-h-screen">
           {draftMode().isEnabled && <AlertBanner />}
+          <BannerAd cityName={"Seattle"}></BannerAd>
           <main>{children}</main>
           <Suspense>
             <Footer />
@@ -118,3 +123,4 @@ export default function RootLayout({
     </html>
   );
 }
+
