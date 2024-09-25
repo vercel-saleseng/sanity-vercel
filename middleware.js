@@ -7,28 +7,17 @@ import { precomputeFlags } from '@/flags';
 export const config = { matcher: ['/'] };
 
 export async function middleware(request) {
+    const response = NextResponse.next()
+
     // sets headers for location
     const city = request.geo?.city ?? 'Unknown'
     const latitude = request.geo?.latitude ?? 'Unknown'
     const longitude = request.geo?.longitude ?? 'Unknown'
 
     // add the location information to the request headers
-    const requestHeaders = new Headers(request.headers)
-
-    requestHeaders.set('x-user-city', city)
-    requestHeaders.set('x-user-latitude', latitude.toString())
-    requestHeaders.set('x-user-longitude', longitude.toString())
-
-    const response = NextResponse.next({
-        request: {
-            headers: requestHeaders,
-        },
-    })
-
-    // gets location for personalization and sets it in the header
-
-
-    console.log('location', city, latitude, longitude)
+    response.headers.set('x-user-city', city)
+    response.headers.set('x-user-latitude', latitude.toString())
+    response.headers.set('x-user-longitude', longitude.toString())
 
     // sets headers for the flag
     // precompute returns a string encoding each flag's returned value

@@ -20,6 +20,9 @@ import { settingsQuery } from "@/sanity/lib/queries";
 import { resolveOpenGraphImage } from "@/sanity/lib/utils";
 import { showAd } from "@/flags";
 import BannerAd from "./banner-ad";
+import { FlagValues } from '@vercel/flags/react';
+import { headers } from 'next/headers'
+
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await sanityFetch<SettingsQueryResult>({
@@ -104,14 +107,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
 
+  const headersList = headers()
+  const city = headersList.get('x-user-city') || 'Error'
+  const ad = await showAd()
+
   return (
     <html lang="en" className={`${inter.variable} bg-white text-black`}>
       <body>
+        <FlagValues values={{ [showAd.key]: ad }} />
+
         <section className="min-h-screen">
           {draftMode().isEnabled && <AlertBanner />}
-          <Suspense>
-            {await showAd ? <BannerAd cityName={"Seattle"} /> : <></>}
-          </Suspense>
+          {ad ? <BannerAd cityName={city} /> : null}
           <main>{children}</main>
           <Suspense>
             <Footer />
