@@ -118,7 +118,9 @@ export default async function RootLayout({
 
         <section className="min-h-screen">
           {draftMode().isEnabled && <AlertBanner />}
-          {ad ? <BannerAd cityName={city} /> : null}
+          <Suspense>
+            {ad ? <BannerAd cityName={city} /> : null}
+          </Suspense>
           <main>{children}</main>
           <Suspense>
             <Footer />
